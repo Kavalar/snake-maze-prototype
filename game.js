@@ -81,6 +81,7 @@ const DEFAULT_TICK_MS = 320;
 const MAX_CANVAS_SIZE = 480;
 const FOOD_POINTS = 10;
 const EXIT_POINTS = 50;
+const LEVEL_GOALS = [2, 2, 3, 3, 4];
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -88,8 +89,15 @@ const statusEl = document.getElementById('status');
 const levelLabel = document.getElementById('levelLabel');
 const movesLabel = document.getElementById('movesLabel');
 const lengthLabel = document.getElementById('lengthLabel');
+const detailsLabel = document.getElementById('detailsLabel');
 const scoreLabel = document.getElementById('scoreLabel');
 const buildLabel = document.getElementById('buildLabel');
+const resultOverlay = document.getElementById('resultOverlay');
+const overlayTitle = document.getElementById('overlayTitle');
+const overlayText = document.getElementById('overlayText');
+const overlayStats = document.getElementById('overlayStats');
+const overlayRestartBtn = document.getElementById('overlayRestartBtn');
+const overlayNextBtn = document.getElementById('overlayNextBtn');
 const restartBtn = document.getElementById('restartBtn');
 const speedInput = document.getElementById('speedInput');
 const speedValue = document.getElementById('speedValue');
@@ -112,7 +120,9 @@ let tickMs = DEFAULT_TICK_MS;
 let cellSize = 40;
 let totalScore = 0;
 let levelStartScore = 0;
-const BUILD_VERSION = 'v0.4';
+let detailsCollected = 0;
+let detailsGoal = 0;
+const BUILD_VERSION = 'v0.6';
 
 function parseLevel(levelRows) {
   const parsed = levelRows.map((row) => row.split(''));
@@ -245,8 +255,33 @@ function setSpeed(ms) {
 function updateHud() {
   movesLabel.textContent = `Ходи: ${moves}`;
   lengthLabel.textContent = `Довжина: ${snake.length}`;
+  detailsLabel.textContent = `Деталі: ${detailsCollected}/${detailsGoal}`;
   scoreLabel.textContent = `Очки: ${totalScore}`;
   buildLabel.textContent = BUILD_VERSION;
+}
+
+function hideOverlay() {
+  resultOverlay.hidden = true;
+}
+
+function showOverlay(title, text, canGoNext) {
+  const levelGain = totalScore - levelStartScore;
+
+  overlayTitle.textContent = title;
+  overlayText.textContent = text;
+  overlayStats.innerHTML = [
+    `Очки: ${totalScore}`,
+    `За рівень: +${Math.max(0, levelGain)}`,
+    `Ходи: ${moves}`,
+    `Довжина: ${snake.length}`,
+    `Деталі: ${detailsCollected}/${detailsGoal}`,
+  ]
+    .map((item) => `<span>${item}</span>`)
+    .join('');
+
+  overlayNextBtn.disabled = !canGoNext;
+  overlayNextBtn.style.opacity = canGoNext ? '1' : '0.5';
+  resultOverlay.hidden = false;
 }
 
 function resetLevel(options = {}) {
@@ -264,8 +299,11 @@ function resetLevel(options = {}) {
   queuedDirection = direction;
   snake = buildInitialSnake(start, direction);
   moves = 0;
+  detailsCollected = 0;
+  detailsGoal = LEVEL_GOALS[levelIndex] || 3;
   gameOver = false;
   gameWon = false;
+  hideOverlay();
 
   spawnFood();
   resizeCanvasForGrid();
@@ -273,8 +311,8 @@ function resetLevel(options = {}) {
   levelLabel.textContent = `Рівень ${levelIndex + 1}/${LEVELS.length}`;
   updateHud();
   statusEl.textContent = food
-    ? 'Змійка рухається сама. Міняй напрямок, збирай червоні клітинки і дійди до виходу.'
-    : 'На старті доступної їжі немає. Йди одразу до виходу.';
+    ? `Збери деталі 0/${detailsGoal} і дійди до виходу.`
+    : 'На старті немає доступної деталі. Перезапусти рівень.';
   draw();
 }
 
@@ -289,11 +327,20 @@ function step() {
   const head = snake[0];
   const nx = head.x + d.x;
   const ny = head.y + d.y;
+  const tryingToExit = nx === exit.x && ny === exit.y;
+
+  if (tryingToExit && detailsCollected < detailsGoal) {
+    const missing = detailsGoal - detailsCollected;
+    statusEl.textContent = `Ще треба зібрати деталей: ${missing}.`;
+    draw();
+    return;
+  }
 
   if (isWall(nx, ny)) {
     gameOver = true;
     statusEl.textContent = 'Програш: врізався у стіну. Перезапусти рівень.';
     draw();
+    showOverlay('Програш', 'Ти врізався у стіну.', false);
     return;
   }
 
@@ -308,6 +355,7 @@ function step() {
     gameOver = true;
     statusEl.textContent = 'Програш: врізався у себе. Перезапусти рівень.';
     draw();
+    showOverlay('Програш', 'Ти врізався у себе.', false);
     return;
   }
 
@@ -315,9 +363,15 @@ function step() {
 
   if (ateFood) {
     totalScore += FOOD_POINTS;
-    spawnFood();
-    if (!food && !gameWon) {
-      statusEl.textContent = 'Попереду немає доступної їжі. Можна йти на вихід.';
+    detailsCollected += 1;
+    if (detailsCollected >= detailsGoal) {
+      food = null;
+      statusEl.textContent = 'Ціль виконана. Тепер йди на вихід.';
+    } else {
+      spawnFood();
+      if (!food && !gameWon) {
+        statusEl.textContent = 'Доступних деталей не залишилось. Спробуй перезапуск рівня.';
+      }
     }
   } else {
     snake.pop();
@@ -326,15 +380,21 @@ function step() {
   moves += 1;
   updateHud();
 
-  if (nx === exit.x && ny === exit.y) {
+  if (tryingToExit) {
     totalScore += EXIT_POINTS;
     gameWon = true;
     updateHud();
+    const hasNext = levelIndex < LEVELS.length - 1;
     statusEl.textContent =
-      levelIndex === LEVELS.length - 1
+      !hasNext
         ? 'Ти пройшов усі рівні. Можна додавати нові механіки.'
         : 'Рівень пройдено. Тисни "Наступний рівень".';
     draw();
+    showOverlay(
+      !hasNext ? 'Фінальна Перемога' : 'Рівень Пройдено',
+      !hasNext ? 'Ти закрив усі рівні.' : 'Круто, готовий до наступного?',
+      hasNext
+    );
     return;
   }
 
@@ -537,6 +597,13 @@ function onTouchEnd(e) {
 
 restartBtn.addEventListener('click', () => resetLevel({ restartCurrent: true }));
 nextBtn.addEventListener('click', () => {
+  if (levelIndex < LEVELS.length - 1) {
+    levelIndex += 1;
+    resetLevel();
+  }
+});
+overlayRestartBtn.addEventListener('click', () => resetLevel({ restartCurrent: true }));
+overlayNextBtn.addEventListener('click', () => {
   if (levelIndex < LEVELS.length - 1) {
     levelIndex += 1;
     resetLevel();
