@@ -82,6 +82,15 @@ const MAX_CANVAS_SIZE = 480;
 const FOOD_POINTS = 10;
 const EXIT_POINTS = 50;
 const LEVEL_GOALS = [2, 2, 3, 3, 4];
+const BOOSTER_CONFIG = {
+  turboGhost: {
+    durationMs: 7000,
+    speedMultiplier: 0.55,
+    chargesPerLevel: 1,
+  },
+};
+// enabled | disabled | hidden
+const START_BUTTON_MODE = 'hidden';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -91,6 +100,7 @@ const movesLabel = document.getElementById('movesLabel');
 const lengthLabel = document.getElementById('lengthLabel');
 const detailsLabel = document.getElementById('detailsLabel');
 const scoreLabel = document.getElementById('scoreLabel');
+const boosterTimerLabel = document.getElementById('boosterTimerLabel');
 const buildLabel = document.getElementById('buildLabel');
 const resultOverlay = document.getElementById('resultOverlay');
 const overlayTitle = document.getElementById('overlayTitle');
@@ -98,10 +108,12 @@ const overlayText = document.getElementById('overlayText');
 const overlayStats = document.getElementById('overlayStats');
 const overlayRestartBtn = document.getElementById('overlayRestartBtn');
 const overlayNextBtn = document.getElementById('overlayNextBtn');
+const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 const speedInput = document.getElementById('speedInput');
 const speedValue = document.getElementById('speedValue');
 const nextBtn = document.getElementById('nextBtn');
+const booster1Btn = document.getElementById('booster1Btn');
 const padButtons = document.querySelectorAll('.pad button[data-dir]');
 
 let levelIndex = 0;
@@ -114,15 +126,19 @@ let queuedDirection = 'right';
 let moves = 0;
 let gameOver = false;
 let gameWon = false;
+let isPlaying = false;
 let touchStart = null;
 let loopId = null;
+let baseTickMs = DEFAULT_TICK_MS;
 let tickMs = DEFAULT_TICK_MS;
 let cellSize = 40;
 let totalScore = 0;
 let levelStartScore = 0;
 let detailsCollected = 0;
 let detailsGoal = 0;
-const BUILD_VERSION = 'v0.6';
+const BUILD_VERSION = 'v0.7';
+let booster1Charges = BOOSTER_CONFIG.turboGhost.chargesPerLevel;
+let boosterActiveUntil = 0;
 
 function parseLevel(levelRows) {
   const parsed = levelRows.map((row) => row.split(''));
@@ -247,9 +263,74 @@ function resizeCanvasForGrid() {
 
 function setSpeed(ms) {
   const clamped = Math.max(120, Math.min(520, ms));
-  tickMs = clamped;
-  speedValue.textContent = `${tickMs} мс`;
+  baseTickMs = clamped;
+  recalcTickMs();
+  speedValue.textContent = `${baseTickMs} мс`;
+}
+
+function recalcTickMs() {
+  const boosterActive = Date.now() < boosterActiveUntil;
+  tickMs = boosterActive
+    ? Math.max(60, Math.round(baseTickMs * BOOSTER_CONFIG.turboGhost.speedMultiplier))
+    : baseTickMs;
   startLoop();
+}
+
+function setPlaying(nextPlaying) {
+  isPlaying = nextPlaying;
+  applyStartButtonMode();
+}
+
+function applyStartButtonMode() {
+  if (START_BUTTON_MODE === 'hidden') {
+    startBtn.style.display = 'none';
+    startBtn.disabled = true;
+    return;
+  }
+
+  startBtn.style.display = '';
+  if (START_BUTTON_MODE === 'disabled') {
+    startBtn.disabled = true;
+    return;
+  }
+
+  startBtn.disabled = isPlaying;
+}
+
+function updateBoosterState() {
+  const msLeft = Math.max(0, boosterActiveUntil - Date.now());
+  const secLeft = (msLeft / 1000).toFixed(1);
+  boosterTimerLabel.textContent = `Бустер: ${secLeft}с`;
+
+  if (msLeft <= 0 && boosterActiveUntil !== 0) {
+    boosterActiveUntil = 0;
+    recalcTickMs();
+  }
+
+  booster1Btn.textContent =
+    booster1Charges > 0
+      ? `Бустер 1: Turbo Ghost (${booster1Charges})`
+      : 'Бустер 1: Turbo Ghost (0)';
+  booster1Btn.disabled = booster1Charges <= 0 || msLeft > 0 || gameOver || gameWon || !isPlaying;
+}
+
+function activateBooster1() {
+  if (booster1Charges <= 0 || gameOver || gameWon || !isPlaying) return;
+  if (Date.now() < boosterActiveUntil) return;
+
+  booster1Charges -= 1;
+  boosterActiveUntil = Date.now() + BOOSTER_CONFIG.turboGhost.durationMs;
+  statusEl.textContent = 'Turbo Ghost активний: прискорення, безсмертя і пробивання стін.';
+  recalcTickMs();
+  updateBoosterState();
+}
+
+function tryStartLevel() {
+  if (gameOver || gameWon || isPlaying) return false;
+  setPlaying(true);
+  statusEl.textContent = `Рівень запущено. Збери ${detailsGoal} деталей і дійди до виходу.`;
+  updateHud();
+  return true;
 }
 
 function updateHud() {
@@ -258,6 +339,7 @@ function updateHud() {
   detailsLabel.textContent = `Деталі: ${detailsCollected}/${detailsGoal}`;
   scoreLabel.textContent = `Очки: ${totalScore}`;
   buildLabel.textContent = BUILD_VERSION;
+  updateBoosterState();
 }
 
 function hideOverlay() {
@@ -301,8 +383,11 @@ function resetLevel(options = {}) {
   moves = 0;
   detailsCollected = 0;
   detailsGoal = LEVEL_GOALS[levelIndex] || 3;
+  booster1Charges = BOOSTER_CONFIG.turboGhost.chargesPerLevel;
+  boosterActiveUntil = 0;
   gameOver = false;
   gameWon = false;
+  setPlaying(false);
   hideOverlay();
 
   spawnFood();
@@ -311,13 +396,16 @@ function resetLevel(options = {}) {
   levelLabel.textContent = `Рівень ${levelIndex + 1}/${LEVELS.length}`;
   updateHud();
   statusEl.textContent = food
-    ? `Збери деталі 0/${detailsGoal} і дійди до виходу.`
+    ? `Торкнись поля, щоб стартувати. Ціль: зібрати 0/${detailsGoal} деталей і дійти до виходу.`
     : 'На старті немає доступної деталі. Перезапусти рівень.';
   draw();
 }
 
 function step() {
-  if (gameOver || gameWon) return;
+  if (gameOver || gameWon || !isPlaying) return;
+
+  updateBoosterState();
+  const boosterActive = Date.now() < boosterActiveUntil;
 
   if (queuedDirection && OPPOSITE[direction] !== queuedDirection) {
     direction = queuedDirection;
@@ -337,11 +425,16 @@ function step() {
   }
 
   if (isWall(nx, ny)) {
-    gameOver = true;
-    statusEl.textContent = 'Програш: врізався у стіну. Перезапусти рівень.';
-    draw();
-    showOverlay('Програш', 'Ти врізався у стіну.', false);
-    return;
+    if (boosterActive && inBounds(nx, ny) && grid[ny][nx] === CELL.WALL) {
+      grid[ny][nx] = CELL.EMPTY;
+    } else {
+      gameOver = true;
+      setPlaying(false);
+      statusEl.textContent = 'Програш: врізався у стіну. Перезапусти рівень.';
+      draw();
+      showOverlay('Програш', 'Ти врізався у стіну.', false);
+      return;
+    }
   }
 
   const ateFood = food && nx === food.x && ny === food.y;
@@ -351,8 +444,9 @@ function step() {
     return !(idx === snake.length - 1 && !ateFood && part.x === tail.x && part.y === tail.y);
   });
 
-  if (hitSelf) {
+  if (hitSelf && !boosterActive) {
     gameOver = true;
+    setPlaying(false);
     statusEl.textContent = 'Програш: врізався у себе. Перезапусти рівень.';
     draw();
     showOverlay('Програш', 'Ти врізався у себе.', false);
@@ -383,6 +477,7 @@ function step() {
   if (tryingToExit) {
     totalScore += EXIT_POINTS;
     gameWon = true;
+    setPlaying(false);
     updateHud();
     const hasNext = levelIndex < LEVELS.length - 1;
     statusEl.textContent =
@@ -550,6 +645,12 @@ function draw() {
 }
 
 function onKey(e) {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    tryStartLevel();
+    return;
+  }
+
   const keyMap = {
     ArrowUp: 'up',
     ArrowDown: 'down',
@@ -569,6 +670,7 @@ function onKey(e) {
 }
 
 function onTouchStart(e) {
+  tryStartLevel();
   const t = e.changedTouches[0];
   touchStart = { x: t.clientX, y: t.clientY };
 }
@@ -602,6 +704,9 @@ nextBtn.addEventListener('click', () => {
     resetLevel();
   }
 });
+startBtn.addEventListener('click', () => {
+  tryStartLevel();
+});
 overlayRestartBtn.addEventListener('click', () => resetLevel({ restartCurrent: true }));
 overlayNextBtn.addEventListener('click', () => {
   if (levelIndex < LEVELS.length - 1) {
@@ -613,6 +718,7 @@ overlayNextBtn.addEventListener('click', () => {
 padButtons.forEach((btn) => {
   btn.addEventListener('click', () => setDirection(btn.dataset.dir));
 });
+booster1Btn.addEventListener('click', activateBooster1);
 
 speedInput.addEventListener('input', (e) => {
   const next = Number(e.target.value);
@@ -620,6 +726,7 @@ speedInput.addEventListener('input', (e) => {
 });
 
 window.addEventListener('keydown', onKey, { passive: false });
+canvas.addEventListener('click', tryStartLevel);
 canvas.addEventListener('touchstart', onTouchStart, { passive: true });
 canvas.addEventListener('touchend', onTouchEnd, { passive: true });
 
