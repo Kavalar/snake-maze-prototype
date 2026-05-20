@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Snake Maze Prototype</title>
+    <style>
+      :root {
+        --bg: #f6f6f6;
+        --wall: #111;
+        --snake: #2e8b57;
+        --head: #145a32;
+        --floor: #fff;
+        --exit: #d35400;
+        --text: #111;
+        --btn: #fff;
+        --btn-border: #ccc;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        display: grid;
+        place-items: center;
+        min-height: 100dvh;
+        padding: 12px;
+        touch-action: manipulation;
+      }
+
+      .wrap {
+        width: min(100%, 520px);
+        display: grid;
+        gap: 12px;
+      }
+
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .hud strong {
+        font-size: 14px;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        border: 2px solid #ddd;
+        background: var(--floor);
+        image-rendering: pixelated;
+      }
+
+      .status {
+        min-height: 20px;
+        font-size: 14px;
+      }
+
+      .control {
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+      }
+
+      .control input[type="range"] {
+        width: 100%;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid var(--btn-border);
+        background: var(--btn);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .pad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        width: 220px;
+      }
+
+      .pad button {
+        min-height: 48px;
+      }
+
+      .pad .empty {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="hud">
+        <strong id="levelLabel">Рівень 1</strong>
+        <strong id="movesLabel">Ходи: 0</strong>
+        <strong id="lengthLabel">Довжина: 1</strong>
+        <strong id="scoreLabel">Очки: 0</strong>
+      </div>
+
+      <canvas id="game" width="480" height="480" aria-label="Snake maze поле"></canvas>
+
+      <div id="status" class="status">Дійди головою змійки до виходу (помаранчева клітинка).</div>
+
+      <label class="control" for="speedInput">
+        <span>Швидкість: <strong id="speedValue">320 мс</strong> на крок</span>
+        <input id="speedInput" type="range" min="120" max="520" step="20" value="320" />
+      </label>
+
+      <div class="row">
+        <button id="restartBtn" type="button">Перезапустити рівень</button>
+        <button id="nextBtn" type="button">Наступний рівень</button>
+      </div>
+
+      <div class="pad" aria-label="Екранні кнопки керування">
+        <span class="empty"></span>
+        <button data-dir="up" type="button">↑</button>
+        <span class="empty"></span>
+
+        <button data-dir="left" type="button">←</button>
+        <span class="empty"></span>
+        <button data-dir="right" type="button">→</button>
+
+        <span class="empty"></span>
+        <button data-dir="down" type="button">↓</button>
+        <span class="empty"></span>
+      </div>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
