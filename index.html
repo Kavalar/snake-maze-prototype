@@ -51,12 +51,72 @@
         font-size: 14px;
       }
 
+      .game-shell {
+        position: relative;
+      }
+
       canvas {
         width: 100%;
         height: auto;
         border: 2px solid #ddd;
         background: var(--floor);
         image-rendering: pixelated;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.62);
+        padding: 16px;
+      }
+
+      .overlay[hidden] {
+        display: none;
+      }
+
+      .overlay-card {
+        width: min(100%, 320px);
+        background: #ffffff;
+        border-radius: 14px;
+        border: 2px solid #d9d9d9;
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .overlay-title {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .overlay-text {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .overlay-stats {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 13px;
+      }
+
+      .overlay-stats span {
+        border: 1px solid #ddd;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: #fafafa;
+      }
+
+      .overlay-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
       }
 
       .status {
@@ -110,10 +170,25 @@
         <strong id="levelLabel">Рівень 1</strong>
         <strong id="movesLabel">Ходи: 0</strong>
         <strong id="lengthLabel">Довжина: 1</strong>
+        <strong id="detailsLabel">Деталі: 0/0</strong>
         <strong id="scoreLabel">Очки: 0</strong>
+        <strong id="buildLabel">v0.6</strong>
       </div>
 
-      <canvas id="game" width="480" height="480" aria-label="Snake maze поле"></canvas>
+      <div class="game-shell">
+        <canvas id="game" width="480" height="480" aria-label="Snake maze поле"></canvas>
+        <div id="resultOverlay" class="overlay" hidden>
+          <div class="overlay-card">
+            <h2 id="overlayTitle" class="overlay-title">Перемога</h2>
+            <p id="overlayText" class="overlay-text">Класний раунд.</p>
+            <div id="overlayStats" class="overlay-stats"></div>
+            <div class="overlay-actions">
+              <button id="overlayRestartBtn" type="button">Ще раз</button>
+              <button id="overlayNextBtn" type="button">Далі</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div id="status" class="status">Дійди головою змійки до виходу (помаранчева клітинка).</div>
 
