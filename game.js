@@ -665,6 +665,9 @@ function onKey(e) {
   const dir = keyMap[e.key];
   if (dir) {
     e.preventDefault();
+    if (!isPlaying) {
+      tryStartLevel();
+    }
     setDirection(dir);
   }
 }
@@ -716,7 +719,12 @@ overlayNextBtn.addEventListener('click', () => {
 });
 
 padButtons.forEach((btn) => {
-  btn.addEventListener('click', () => setDirection(btn.dataset.dir));
+  btn.addEventListener('click', () => {
+    if (!isPlaying) {
+      tryStartLevel();
+    }
+    setDirection(btn.dataset.dir);
+  });
 });
 booster1Btn.addEventListener('click', activateBooster1);
 
