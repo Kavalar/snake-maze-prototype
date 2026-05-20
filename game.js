@@ -77,7 +77,7 @@ const OPPOSITE = {
   right: 'left',
 };
 
-const DEFAULT_TICK_MS = 400;
+const DEFAULT_TICK_MS = 320;
 const MAX_CANVAS_SIZE = 480;
 const FOOD_POINTS = 10;
 const EXIT_POINTS = 50;
