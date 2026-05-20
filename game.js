@@ -89,6 +89,7 @@ const levelLabel = document.getElementById('levelLabel');
 const movesLabel = document.getElementById('movesLabel');
 const lengthLabel = document.getElementById('lengthLabel');
 const scoreLabel = document.getElementById('scoreLabel');
+const buildLabel = document.getElementById('buildLabel');
 const restartBtn = document.getElementById('restartBtn');
 const speedInput = document.getElementById('speedInput');
 const speedValue = document.getElementById('speedValue');
@@ -111,6 +112,7 @@ let tickMs = DEFAULT_TICK_MS;
 let cellSize = 40;
 let totalScore = 0;
 let levelStartScore = 0;
+const BUILD_VERSION = 'v0.4';
 
 function parseLevel(levelRows) {
   const parsed = levelRows.map((row) => row.split(''));
@@ -244,6 +246,7 @@ function updateHud() {
   movesLabel.textContent = `Ходи: ${moves}`;
   lengthLabel.textContent = `Довжина: ${snake.length}`;
   scoreLabel.textContent = `Очки: ${totalScore}`;
+  buildLabel.textContent = BUILD_VERSION;
 }
 
 function resetLevel(options = {}) {
@@ -351,14 +354,47 @@ function drawCell(x, y, color) {
 function drawHead(x, y, dirName) {
   const px = x * cellSize;
   const py = y * cellSize;
-  const pad = Math.max(2, Math.floor(cellSize * 0.12));
-  const eyeR = Math.max(2, Math.floor(cellSize * 0.08));
-  const eyeOffset = Math.floor(cellSize * 0.24);
+  const pad = Math.max(2, Math.floor(cellSize * 0.08));
+  const eyeR = Math.max(3, Math.floor(cellSize * 0.16));
+  const eyeOffset = Math.floor(cellSize * 0.23);
+  const tip = Math.max(4, Math.floor(cellSize * 0.24));
   const centerX = px + Math.floor(cellSize / 2);
   const centerY = py + Math.floor(cellSize / 2);
 
-  ctx.fillStyle = '#0f4d2c';
-  ctx.fillRect(px + pad, py + pad, cellSize - pad * 2, cellSize - pad * 2);
+  ctx.fillStyle = '#0b3f24';
+  if (dirName === 'up') {
+    ctx.fillRect(px + pad, py + pad + tip, cellSize - pad * 2, cellSize - pad * 2 - tip);
+    ctx.beginPath();
+    ctx.moveTo(centerX, py + pad);
+    ctx.lineTo(px + cellSize - pad, py + pad + tip + 1);
+    ctx.lineTo(px + pad, py + pad + tip + 1);
+    ctx.closePath();
+    ctx.fill();
+  } else if (dirName === 'down') {
+    ctx.fillRect(px + pad, py + pad, cellSize - pad * 2, cellSize - pad * 2 - tip);
+    ctx.beginPath();
+    ctx.moveTo(centerX, py + cellSize - pad);
+    ctx.lineTo(px + cellSize - pad, py + cellSize - pad - tip - 1);
+    ctx.lineTo(px + pad, py + cellSize - pad - tip - 1);
+    ctx.closePath();
+    ctx.fill();
+  } else if (dirName === 'left') {
+    ctx.fillRect(px + pad + tip, py + pad, cellSize - pad * 2 - tip, cellSize - pad * 2);
+    ctx.beginPath();
+    ctx.moveTo(px + pad, centerY);
+    ctx.lineTo(px + pad + tip + 1, py + pad);
+    ctx.lineTo(px + pad + tip + 1, py + cellSize - pad);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    ctx.fillRect(px + pad, py + pad, cellSize - pad * 2 - tip, cellSize - pad * 2);
+    ctx.beginPath();
+    ctx.moveTo(px + cellSize - pad, centerY);
+    ctx.lineTo(px + cellSize - pad - tip - 1, py + pad);
+    ctx.lineTo(px + cellSize - pad - tip - 1, py + cellSize - pad);
+    ctx.closePath();
+    ctx.fill();
+  }
 
   let eye1 = { x: centerX - eyeOffset, y: centerY - eyeOffset };
   let eye2 = { x: centerX + eyeOffset, y: centerY - eyeOffset };
@@ -380,11 +416,29 @@ function drawHead(x, y, dirName) {
   ctx.arc(eye2.x, eye2.y, eyeR, 0, Math.PI * 2);
   ctx.fill();
 
+  const pupilShift = Math.max(1, Math.floor(cellSize * 0.08));
+  const d = DIRS[dirName] || DIRS.right;
+  const p1x = eye1.x + d.x * pupilShift;
+  const p1y = eye1.y + d.y * pupilShift;
+  const p2x = eye2.x + d.x * pupilShift;
+  const p2y = eye2.y + d.y * pupilShift;
+
   ctx.fillStyle = '#111111';
   ctx.beginPath();
-  ctx.arc(eye1.x, eye1.y, Math.max(1, eyeR - 1), 0, Math.PI * 2);
-  ctx.arc(eye2.x, eye2.y, Math.max(1, eyeR - 1), 0, Math.PI * 2);
+  ctx.arc(p1x, p1y, Math.max(2, eyeR - 2), 0, Math.PI * 2);
+  ctx.arc(p2x, p2y, Math.max(2, eyeR - 2), 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.fillStyle = '#f2994a';
+  if (dirName === 'up') {
+    ctx.fillRect(centerX - 3, py + pad - 1, 6, 4);
+  } else if (dirName === 'down') {
+    ctx.fillRect(centerX - 3, py + cellSize - pad - 3, 6, 4);
+  } else if (dirName === 'left') {
+    ctx.fillRect(px + pad - 1, centerY - 3, 4, 6);
+  } else {
+    ctx.fillRect(px + cellSize - pad - 3, centerY - 3, 4, 6);
+  }
 }
 
 function draw() {
