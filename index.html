@@ -198,7 +198,7 @@
         <strong id="detailsLabel">Деталі: 0/0</strong>
         <strong id="scoreLabel">Очки: 0</strong>
         <strong id="boosterTimerLabel">Бустер: 0.0с</strong>
-        <strong id="buildLabel">v0.8</strong>
+        <strong id="buildLabel">v0.9</strong>
       </div>
 
       <div class="game-shell">
@@ -253,6 +253,14 @@
       </div>
     </main>
 
+    <script>
+      window.addEventListener('error', (e) => {
+        const status = document.getElementById('status');
+        if (!status) return;
+        status.textContent = `Помилка скрипта: ${e.message}`;
+        status.style.color = '#b00020';
+      });
+    </script>
     <script src="game.js"></script>
   </body>
 </html>
