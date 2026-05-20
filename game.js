@@ -348,6 +348,45 @@ function drawCell(x, y, color) {
   ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 }
 
+function drawHead(x, y, dirName) {
+  const px = x * cellSize;
+  const py = y * cellSize;
+  const pad = Math.max(2, Math.floor(cellSize * 0.12));
+  const eyeR = Math.max(2, Math.floor(cellSize * 0.08));
+  const eyeOffset = Math.floor(cellSize * 0.24);
+  const centerX = px + Math.floor(cellSize / 2);
+  const centerY = py + Math.floor(cellSize / 2);
+
+  ctx.fillStyle = '#0f4d2c';
+  ctx.fillRect(px + pad, py + pad, cellSize - pad * 2, cellSize - pad * 2);
+
+  let eye1 = { x: centerX - eyeOffset, y: centerY - eyeOffset };
+  let eye2 = { x: centerX + eyeOffset, y: centerY - eyeOffset };
+
+  if (dirName === 'down') {
+    eye1 = { x: centerX - eyeOffset, y: centerY + eyeOffset };
+    eye2 = { x: centerX + eyeOffset, y: centerY + eyeOffset };
+  } else if (dirName === 'left') {
+    eye1 = { x: centerX - eyeOffset, y: centerY - eyeOffset };
+    eye2 = { x: centerX - eyeOffset, y: centerY + eyeOffset };
+  } else if (dirName === 'right') {
+    eye1 = { x: centerX + eyeOffset, y: centerY - eyeOffset };
+    eye2 = { x: centerX + eyeOffset, y: centerY + eyeOffset };
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(eye1.x, eye1.y, eyeR, 0, Math.PI * 2);
+  ctx.arc(eye2.x, eye2.y, eyeR, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#111111';
+  ctx.beginPath();
+  ctx.arc(eye1.x, eye1.y, Math.max(1, eyeR - 1), 0, Math.PI * 2);
+  ctx.arc(eye2.x, eye2.y, Math.max(1, eyeR - 1), 0, Math.PI * 2);
+  ctx.fill();
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -367,7 +406,11 @@ function draw() {
   }
 
   snake.forEach((part, idx) => {
-    drawCell(part.x, part.y, idx === 0 ? '#145a32' : '#2e8b57');
+    if (idx === 0) {
+      drawHead(part.x, part.y, direction);
+    } else {
+      drawCell(part.x, part.y, '#2e8b57');
+    }
   });
 
   const cols = grid[0].length;
