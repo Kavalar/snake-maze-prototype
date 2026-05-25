@@ -15,6 +15,7 @@
         --text: #111;
         --btn: #fff;
         --btn-border: #ccc;
+        --phone-width: 393px;
       }
 
       * {
@@ -26,17 +27,17 @@
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
         color: var(--text);
         background: var(--bg);
-        display: grid;
-        place-items: center;
+        display: flex;
+        justify-content: center;
         min-height: 100dvh;
-        padding: 12px;
+        padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
         touch-action: manipulation;
       }
 
       .wrap {
-        width: min(100%, 520px);
+        width: min(100%, var(--phone-width));
         display: grid;
-        gap: 12px;
+        gap: 10px;
       }
 
       .hud {
@@ -48,7 +49,7 @@
       }
 
       .hud strong {
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .game-shell {
@@ -121,13 +122,13 @@
 
       .status {
         min-height: 20px;
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .control {
         display: grid;
         gap: 6px;
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .control input[type="range"] {
@@ -168,7 +169,7 @@
       button {
         border: 1px solid var(--btn-border);
         background: var(--btn);
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 10px 12px;
         font-size: 14px;
       }
@@ -176,12 +177,15 @@
       .pad {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        width: 220px;
+        gap: 10px;
+        width: min(100%, 250px);
+        margin: 2px auto 6px;
       }
 
       .pad button {
-        min-height: 48px;
+        min-height: 62px;
+        font-size: 26px;
+        line-height: 1;
       }
 
       .pad .empty {
@@ -216,6 +220,20 @@
         </div>
       </div>
 
+      <div class="pad" aria-label="Екранні кнопки керування">
+        <span class="empty"></span>
+        <button data-dir="up" type="button">↑</button>
+        <span class="empty"></span>
+
+        <button data-dir="left" type="button">←</button>
+        <span class="empty"></span>
+        <button data-dir="right" type="button">→</button>
+
+        <span class="empty"></span>
+        <button data-dir="down" type="button">↓</button>
+        <span class="empty"></span>
+      </div>
+
       <div id="status" class="status">Дійди головою змійки до виходу (помаранчева клітинка).</div>
 
       <label class="control" for="speedInput">
@@ -238,19 +256,6 @@
         </div>
       </section>
 
-      <div class="pad" aria-label="Екранні кнопки керування">
-        <span class="empty"></span>
-        <button data-dir="up" type="button">↑</button>
-        <span class="empty"></span>
-
-        <button data-dir="left" type="button">←</button>
-        <span class="empty"></span>
-        <button data-dir="right" type="button">→</button>
-
-        <span class="empty"></span>
-        <button data-dir="down" type="button">↓</button>
-        <span class="empty"></span>
-      </div>
     </main>
 
     <script>
