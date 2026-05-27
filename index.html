@@ -36,8 +36,15 @@
 
       .wrap {
         width: min(100%, var(--phone-width));
+        min-height: min(852px, calc(100dvh - 24px - env(safe-area-inset-bottom)));
         display: grid;
+        grid-template-rows: auto auto auto auto auto auto auto 1fr;
         gap: 10px;
+        border: 2px solid #d7d7d7;
+        border-radius: 26px;
+        background: #f2f2f2;
+        padding: 10px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
       }
 
       .hud {
@@ -152,18 +159,57 @@
       }
 
       .booster-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
       }
 
       .booster-slot {
-        flex: 1 1 140px;
+        min-height: 44px;
         text-align: center;
       }
 
       .booster-slot[disabled] {
         opacity: 0.55;
+      }
+
+      .input-zone {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: end;
+      }
+
+      .joystick-wrap {
+        display: grid;
+        place-items: center;
+        justify-self: end;
+      }
+
+      .joystick {
+        width: 148px;
+        height: 148px;
+        border-radius: 50%;
+        border: 2px solid #cfcfcf;
+        background: radial-gradient(circle at 30% 30%, #fbfbfb, #e5e5e5);
+        position: relative;
+        touch-action: none;
+        user-select: none;
+      }
+
+      .joystick-knob {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        border: 2px solid #bcbcbc;
+        background: radial-gradient(circle at 30% 30%, #ffffff, #d7d7d7);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 0.06s linear;
+        will-change: transform;
+        pointer-events: none;
       }
 
       button {
@@ -174,22 +220,15 @@
         font-size: 14px;
       }
 
-      .pad {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        width: min(100%, 250px);
-        margin: 2px auto 6px;
-      }
+      @media (max-width: 360px) {
+        .input-zone {
+          grid-template-columns: 1fr;
+        }
 
-      .pad button {
-        min-height: 62px;
-        font-size: 26px;
-        line-height: 1;
-      }
-
-      .pad .empty {
-        visibility: hidden;
+        .joystick {
+          width: 136px;
+          height: 136px;
+        }
       }
     </style>
   </head>
@@ -202,7 +241,7 @@
         <strong id="detailsLabel">Деталі: 0/0</strong>
         <strong id="scoreLabel">Очки: 0</strong>
         <strong id="boosterTimerLabel">Бустер: 0.0с</strong>
-        <strong id="buildLabel">v0.9</strong>
+        <strong id="buildLabel">v1.2</strong>
       </div>
 
       <div class="game-shell">
@@ -220,19 +259,21 @@
         </div>
       </div>
 
-      <div class="pad" aria-label="Екранні кнопки керування">
-        <span class="empty"></span>
-        <button data-dir="up" type="button">↑</button>
-        <span class="empty"></span>
-
-        <button data-dir="left" type="button">←</button>
-        <span class="empty"></span>
-        <button data-dir="right" type="button">→</button>
-
-        <span class="empty"></span>
-        <button data-dir="down" type="button">↓</button>
-        <span class="empty"></span>
-      </div>
+      <section class="input-zone" aria-label="Керування">
+        <section class="boosters" aria-label="Панель бустерів">
+          <div class="title">Бустери (ліва рука):</div>
+          <div class="booster-row">
+            <button id="booster1Btn" class="booster-slot" type="button">Бустер 1: Turbo Ghost</button>
+            <button id="booster2Btn" class="booster-slot" type="button" disabled>Бустер 2 (скоро)</button>
+            <button id="booster3Btn" class="booster-slot" type="button" disabled>Бустер 3 (скоро)</button>
+          </div>
+        </section>
+        <div class="joystick-wrap">
+          <div id="joystick" class="joystick" aria-label="Віртуальний джойстік">
+            <div id="joystickKnob" class="joystick-knob"></div>
+          </div>
+        </div>
+      </section>
 
       <div id="status" class="status">Дійди головою змійки до виходу (помаранчева клітинка).</div>
 
@@ -246,15 +287,6 @@
         <button id="restartBtn" type="button">Перезапустити рівень</button>
         <button id="nextBtn" type="button">Наступний рівень</button>
       </div>
-
-      <section class="boosters" aria-label="Панель бустерів">
-        <div class="title">Бустери (3 слоти):</div>
-        <div class="booster-row">
-          <button id="booster1Btn" class="booster-slot" type="button">Бустер 1: Turbo Ghost</button>
-          <button id="booster2Btn" class="booster-slot" type="button" disabled>Бустер 2 (скоро)</button>
-          <button id="booster3Btn" class="booster-slot" type="button" disabled>Бустер 3 (скоро)</button>
-        </div>
-      </section>
 
     </main>
 
