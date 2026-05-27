@@ -7,59 +7,154 @@ const CELL = {
 
 const LEVELS = [
   [
-    '############',
-    '#S...#.....#',
-    '#.##.#.###.#',
-    '#....#...#.#',
-    '####.###.#.#',
-    '#......#.#.#',
-    '#.######.#.#',
-    '#........#E#',
-    '############',
+    '#########',
+    '#S......#',
+    '#.#####.#',
+    '#.....#.#',
+    '#####.#.#',
+    '#.....#.#',
+    '#.#####.#',
+    '#......E#',
+    '#########',
   ],
   [
-    '############',
-    '#S....#....#',
-    '#.##.##.##.#',
-    '#.#.....##.#',
-    '#.#.###....#',
-    '#...#..###.#',
-    '###.#.##...#',
-    '#....#....E#',
-    '############',
+    '###########',
+    '#S....#...#',
+    '#####.###.#',
+    '#...#.#...#',
+    '#.#.#.#.#.#',
+    '#.#.#...#.#',
+    '#.#.#####.#',
+    '#.#......E#',
+    '###########',
   ],
   [
-    '############',
-    '#S.....#...#',
-    '#.####.#.#.#',
-    '#....#.#.#.#',
-    '####.#.#.#.#',
-    '#....#...#.#',
-    '#.######.#.#',
-    '#........#E#',
-    '############',
+    '###########',
+    '#S......#.#',
+    '#######.#.#',
+    '#.....#...#',
+    '#.#######.#',
+    '#.#.....#.#',
+    '#.#.#.#.#.#',
+    '#...#.#.#.#',
+    '#.###.###.#',
+    '#...#....E#',
+    '###########',
   ],
   [
-    '############',
-    '#S...#.....#',
-    '###.#.###..#',
-    '#...#...##.#',
-    '#.#####....#',
-    '#.....####.#',
-    '#.###......#',
-    '#...######E#',
-    '############',
+    '#############',
+    '#S#.........#',
+    '#.#.#.#####.#',
+    '#.#.#.#.#...#',
+    '#.###.#.#.###',
+    '#...#.#.#...#',
+    '###.#.#.###.#',
+    '#.#...#...#.#',
+    '#.#####.#.#.#',
+    '#.......#..E#',
+    '#############',
   ],
   [
-    '############',
-    '#S......#..#',
-    '#.#######.##',
-    '#...#......#',
-    '###.#.######',
-    '#...#......#',
-    '#.#####.##.#',
-    '#.......##E#',
-    '############',
+    '#############',
+    '#S..#.#.....#',
+    '###.#.#.###.#',
+    '#...#.....#.#',
+    '#.#########.#',
+    '#.....#.....#',
+    '#####.#.###.#',
+    '#...#.#...#.#',
+    '#.###.#.#.###',
+    '#.#...#.#...#',
+    '#.#.#######.#',
+    '#..........E#',
+    '#############',
+  ],
+  [
+    '###############',
+    '#S#...........#',
+    '#.###########.#',
+    '#...........#.#',
+    '###########.#.#',
+    '#...#.....#.#.#',
+    '#.#.#.#.#.#.#.#',
+    '#.#.#.#.#.#...#',
+    '#.#.#.#.#####.#',
+    '#.#.#.#.....#.#',
+    '#.###.###.###.#',
+    '#.......#....E#',
+    '###############',
+  ],
+  [
+    '###############',
+    '#S..#.....#...#',
+    '###.###.#.#.#.#',
+    '#.#.....#...#.#',
+    '#.###########.#',
+    '#...........#.#',
+    '#.#########.#.#',
+    '#.#.......#.#.#',
+    '#.#.#####.#.#.#',
+    '#.#.....#.#...#',
+    '#.#######.#####',
+    '#.............#',
+    '#############.#',
+    '#............E#',
+    '###############',
+  ],
+  [
+    '#################',
+    '#S......#.....#.#',
+    '#######.###.#.#.#',
+    '#.#...#.#...#.#.#',
+    '#.#.#.#.#.###.#.#',
+    '#...#...#.#.#...#',
+    '#.#######.#.###.#',
+    '#.#.....#.#.#...#',
+    '#.#.###.#.#.#.###',
+    '#.#...#...#.#.#.#',
+    '#.#.#.#####.#.#.#',
+    '#.#.#.#.....#...#',
+    '#.###.#.#.#####.#',
+    '#.....#.#......E#',
+    '#################',
+  ],
+  [
+    '#################',
+    '#S........#.....#',
+    '#########.#####.#',
+    '#...#.....#...#.#',
+    '#.#.#.#####.#.#.#',
+    '#.#...#.....#...#',
+    '#.#######.#####.#',
+    '#.#.....#.....#.#',
+    '#.#.#.#.#.###.###',
+    '#.#.#.#.#...#...#',
+    '#.###.#.#####.#.#',
+    '#.#...#.#...#.#.#',
+    '#.#.###.#.#.#.#.#',
+    '#...#.#.#.#.#.#.#',
+    '#####.#.#.#.###.#',
+    '#.........#....E#',
+    '#################',
+  ],
+  [
+    '###################',
+    '#S..#.......#.....#',
+    '###.#.#####.#####.#',
+    '#.#.#.#.#...#.....#',
+    '#.#.#.#.#.###.###.#',
+    '#.#.#.#.#.#...#...#',
+    '#.#.#.#.#.###.###.#',
+    '#.#...#.#...#...#.#',
+    '#.#####.###.###.###',
+    '#.........#...#...#',
+    '#.###.#######.###.#',
+    '#.#.#.#.......#...#',
+    '#.#.#.#.#######.###',
+    '#...#.#.....#.....#',
+    '###.#.#####.#####.#',
+    '#...#............E#',
+    '###################',
   ],
 ];
 
@@ -78,10 +173,10 @@ const OPPOSITE = {
 };
 
 const DEFAULT_TICK_MS = 320;
-const MAX_CANVAS_SIZE = 480;
+const MAX_CANVAS_SIZE = 520;
 const FOOD_POINTS = 10;
 const EXIT_POINTS = 50;
-const LEVEL_GOALS = [2, 2, 3, 3, 4];
+const LEVEL_GOALS = [1, 2, 2, 3, 3, 4, 4, 5, 5, 6];
 const BOOSTER_CONFIG = {
   turboGhost: {
     durationMs: 7000,
@@ -114,7 +209,8 @@ const speedInput = document.getElementById('speedInput');
 const speedValue = document.getElementById('speedValue');
 const nextBtn = document.getElementById('nextBtn');
 const booster1Btn = document.getElementById('booster1Btn') || { addEventListener: () => {}, disabled: true, textContent: '' };
-const padButtons = document.querySelectorAll('.pad button[data-dir]');
+const joystick = document.getElementById('joystick') || { addEventListener: () => {}, getBoundingClientRect: () => ({ left: 0, top: 0, width: 1, height: 1 }) };
+const joystickKnob = document.getElementById('joystickKnob') || { style: {} };
 
 let levelIndex = 0;
 let grid = [];
@@ -127,7 +223,6 @@ let moves = 0;
 let gameOver = false;
 let gameWon = false;
 let isPlaying = false;
-let touchStart = null;
 let loopId = null;
 let baseTickMs = DEFAULT_TICK_MS;
 let tickMs = DEFAULT_TICK_MS;
@@ -136,9 +231,11 @@ let totalScore = 0;
 let levelStartScore = 0;
 let detailsCollected = 0;
 let detailsGoal = 0;
-const BUILD_VERSION = 'v0.9';
+const BUILD_VERSION = 'v1.2';
 let booster1Charges = BOOSTER_CONFIG.turboGhost.chargesPerLevel;
 let boosterActiveUntil = 0;
+let joystickTouchId = null;
+const JOYSTICK_DEADZONE = 14;
 
 function parseLevel(levelRows) {
   const parsed = levelRows.map((row) => row.split(''));
@@ -267,7 +364,12 @@ function canStartInDirection(dirName) {
 function resizeCanvasForGrid() {
   const cols = grid[0].length;
   const rows = grid.length;
-  cellSize = Math.floor(Math.min(MAX_CANVAS_SIZE / cols, MAX_CANVAS_SIZE / rows));
+  const shellWidth = canvas.parentElement ? canvas.parentElement.clientWidth : MAX_CANVAS_SIZE;
+  const usableWidth = Math.min(MAX_CANVAS_SIZE, Math.max(260, shellWidth - 4));
+  const usableHeight = Math.min(MAX_CANVAS_SIZE, Math.max(260, Math.floor(window.innerHeight * 0.48)));
+  const byWidth = Math.floor(usableWidth / cols);
+  const byHeight = Math.floor(usableHeight / rows);
+  cellSize = Math.max(12, Math.min(byWidth, byHeight));
   canvas.width = cols * cellSize;
   canvas.height = rows * cellSize;
 }
@@ -361,6 +463,40 @@ function handleDirectionInput(dirName) {
   }
 
   setDirection(dirName);
+}
+
+function setJoystickKnob(dx, dy) {
+  joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+}
+
+function resetJoystickKnob() {
+  setJoystickKnob(0, 0);
+}
+
+function joystickDirectionFromDelta(dx, dy) {
+  const len = Math.hypot(dx, dy);
+  if (len < JOYSTICK_DEADZONE) return null;
+  if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+  return dy > 0 ? 'down' : 'up';
+}
+
+function updateJoystickFromPoint(clientX, clientY) {
+  const rect = joystick.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = clientX - cx;
+  const dy = clientY - cy;
+  const maxOffset = rect.width * 0.28;
+  const len = Math.hypot(dx, dy) || 1;
+  const scale = Math.min(1, maxOffset / len);
+  const knobDx = Math.round(dx * scale);
+  const knobDy = Math.round(dy * scale);
+  setJoystickKnob(knobDx, knobDy);
+
+  const dir = joystickDirectionFromDelta(dx, dy);
+  if (dir) {
+    handleDirectionInput(dir);
+  }
 }
 
 function updateHud() {
@@ -699,31 +835,44 @@ function onKey(e) {
   }
 }
 
-function onTouchStart(e) {
-  const t = e.changedTouches[0];
-  touchStart = { x: t.clientX, y: t.clientY };
+function onJoystickTouchStart(e) {
+  if (joystickTouchId !== null) return;
+  const rect = joystick.getBoundingClientRect();
+  for (const t of e.changedTouches) {
+    if (
+      t.clientX >= rect.left &&
+      t.clientX <= rect.right &&
+      t.clientY >= rect.top &&
+      t.clientY <= rect.bottom
+    ) {
+      joystickTouchId = t.identifier;
+      updateJoystickFromPoint(t.clientX, t.clientY);
+      e.preventDefault();
+      return;
+    }
+  }
 }
 
-function onTouchEnd(e) {
-  if (!touchStart) return;
-  const t = e.changedTouches[0];
-  const dx = t.clientX - touchStart.x;
-  const dy = t.clientY - touchStart.y;
-  const absX = Math.abs(dx);
-  const absY = Math.abs(dy);
-
-  if (Math.max(absX, absY) < 18) {
-    touchStart = null;
-    return;
+function onJoystickTouchMove(e) {
+  if (joystickTouchId === null) return;
+  for (const t of e.touches) {
+    if (t.identifier === joystickTouchId) {
+      updateJoystickFromPoint(t.clientX, t.clientY);
+      e.preventDefault();
+      return;
+    }
   }
+}
 
-  if (absX > absY) {
-    handleDirectionInput(dx > 0 ? 'right' : 'left');
-  } else {
-    handleDirectionInput(dy > 0 ? 'down' : 'up');
+function onJoystickTouchEnd(e) {
+  if (joystickTouchId === null) return;
+  for (const t of e.changedTouches) {
+    if (t.identifier === joystickTouchId) {
+      joystickTouchId = null;
+      resetJoystickKnob();
+      return;
+    }
   }
-
-  touchStart = null;
 }
 
 restartBtn.addEventListener('click', () => resetLevel({ restartCurrent: true }));
@@ -743,13 +892,15 @@ overlayNextBtn.addEventListener('click', () => {
     resetLevel();
   }
 });
-
-padButtons.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    handleDirectionInput(btn.dataset.dir);
-  });
-});
 booster1Btn.addEventListener('click', activateBooster1);
+booster1Btn.addEventListener(
+  'touchstart',
+  (e) => {
+    e.preventDefault();
+    activateBooster1();
+  },
+  { passive: false }
+);
 
 speedInput.addEventListener('input', (e) => {
   const next = Number(e.target.value);
@@ -757,8 +908,16 @@ speedInput.addEventListener('input', (e) => {
 });
 
 window.addEventListener('keydown', onKey, { passive: false });
-canvas.addEventListener('touchstart', onTouchStart, { passive: true });
-canvas.addEventListener('touchend', onTouchEnd, { passive: true });
+window.addEventListener('resize', () => {
+  if (!grid.length) return;
+  resizeCanvasForGrid();
+  draw();
+});
+
+joystick.addEventListener('touchstart', onJoystickTouchStart, { passive: false });
+joystick.addEventListener('touchmove', onJoystickTouchMove, { passive: false });
+joystick.addEventListener('touchend', onJoystickTouchEnd, { passive: true });
+joystick.addEventListener('touchcancel', onJoystickTouchEnd, { passive: true });
 
 setSpeed(Number(speedInput.value) || DEFAULT_TICK_MS);
 resetLevel();
